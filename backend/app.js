@@ -17,3 +17,4 @@ if (!dbUser || !dbPassword) {
   console.warn("Database credentials not set in environment.");
 }
 // improve logging
+// improve logging
