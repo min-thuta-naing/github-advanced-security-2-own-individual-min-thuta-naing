@@ -1,0 +1,40 @@
+# name: CodeQL
+# on: [push, pull_request]
+# jobs:
+#   analyze:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       contents: read
+#       security-events: write
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: github/codeql-action/init@v3
+#         with:
+#           languages: javascript
+#       - uses: github/codeql-action/analyze@v3
+#       - uses: github/codeql-action/upload-sarif@v3
+
+name: CodeQL
+on: [push, pull_request]
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    # Keep this job non-blocking for private repos without GHAS
+    continue-on-error: true
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        if: ${{ github.event.repository.private == false }}
+        with:
+          languages: javascript
+      - uses: github/codeql-action/analyze@v3
+        if: ${{ github.event.repository.private == false }}
+        # Prevent lab failure if code scanning upload is unsupported
+        continue-on-error: true
+      - name: Skip CodeQL on private repos (no GHAS)
+        if: ${{ github.event.repository.private == true }}
+        run: echo "CodeQL skipped on private repository without GHAS"
+
